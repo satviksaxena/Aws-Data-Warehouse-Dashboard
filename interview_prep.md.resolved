@@ -1,0 +1,44 @@
+# Interview Preparation & AWS Architecture Guide
+
+This guide breaks down exactly what you need to set up in AWS, the architectural decisions you made, and how to confidently talk about this project in a Data Engineering or Data Science interview.
+
+## 1. Project Architecture (The "Big Picture")
+When asked *"Walk me through your AWS Data Warehouse project"*, this is your story:
+
+> "I built an end-to-end ELT pipeline using **Apache Airflow** as the orchestrator. First, raw financial transaction data is extracted and landed into a Data Lake on **Amazon S3**. From there, I utilized **Amazon Redshift's** MPP (Massively Parallel Processing) architecture to rapidly ingest the data using the `COPY` command into staging tables. Once in Redshift, I transformed the data into a **Star Schema** dimensional model. Finally, I built an interactive executive dashboard using **Streamlit** that queries Redshift directly to display KPIs like fraud rates and month-over-month growth."
+
+## 2. What You Need to Setup in AWS (Using your $300 credit)
+
+To make this real, you need to configure three things in your AWS console:
+
+### A. Amazon S3 (Data Lake)
+1. Create an S3 Bucket (e.g., `s3://satvik-financial-datalake-2026`).
+2. Inside, create a folder named `landing/`.
+
+### B. Amazon Redshift (Data Warehouse)
+1. Provision a Redshift cluster. *Tip: Choose the cheapest node type (`dc2.large` or Serverless) to save your credits!*
+2. Note your Endpoint URL, Port (5439), Master Username, and Password.
+3. Ensure the security group allows inbound TCP traffic on port 5439 from your IP address (so your local Airflow and Streamlit can talk to it).
+
+### C. AWS IAM (Identity and Access Management)
+1. Create an IAM Role named `RedshiftS3AccessRole`.
+2. Attach the `AmazonS3ReadOnlyAccess` policy to this role.
+3. Attach this IAM role to your Redshift cluster. *(This is a massive talking point for interviews! It shows you know cloud security best practices by not hardcoding passwords).*
+
+## 3. Key Interview Talking Points & Buzzwords
+
+You want to sound like a seasoned engineer. Make sure to drop these concepts:
+
+* **ELT vs ETL:** "I chose an ELT (Extract, Load, Transform) approach. Instead of transforming data on a local server, I loaded raw data into Redshift staging tables first, leveraging Redshift's immense compute power to do the transformations."
+* **Star Schema:** "I designed a dimensional model with a central `fact_transactions` table surrounded by `dim_customers` and `dim_accounts`. This optimizes the database for rapid analytical queries (OLAP) rather than transactional writes (OLTP)."
+* **Idempotency:** "My Airflow pipeline is idempotent. If a pipeline fails midway and I restart it, it uses `TRUNCATE` and `INSERT` commands so data is never accidentally duplicated."
+* **Cost Optimization:** "In my Streamlit dashboard, I used caching (`@st.cache_data`) for the heavy SQL queries. This minimizes the compute load on Redshift and keeps AWS costs down."
+
+## 4. Next Steps for the Codebase
+I will update your Airflow DAG right now to replace the local mock database logic with actual AWS Redshift `COPY` commands. Once you create your Redshift cluster, you just plug in your credentials!
+
+Key things you will learn in this guide:
+The Exact Architecture Story: How to answer "Walk me through this project" smoothly using industry terminology.
+AWS Setup Steps: The exact 3 things you need to configure in AWS (S3, Redshift, and IAM Roles) using your $300 credit.
+The "Buzzwords": Why you chose ELT over ETL, why your Airflow DAGs are Idempotent, and how your Star Schema optimizes OLAP queries.
+Take a look at the guide! Once you get your Redshift cluster running, you just need to update your .env file with the Redshift endpoint and IAM Role, and the entire pipeline will magically switch from running locally to running in the Cloud.
