@@ -106,7 +106,6 @@ Access the **Streamlit Dashboard** at `http://localhost:8501`.
 
 ## Dashboard Previews
 
-*(Add screenshots of the Streamlit dashboard here)*
-
-![Executive Dashboard Overview](./path-to-screenshot1.png)
-![Advanced Analytics & Fraud Breakdowns](./path-to-screenshot2.png)
+![Executive Dashboard Overview](image.png)
+![Advanced Analytics & Fraud Breakdowns](image-1.png)
+![Airflow Data Pipeline](image-2.png)
